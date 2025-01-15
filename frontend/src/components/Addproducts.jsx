@@ -1,13 +1,14 @@
 
 import React , {useState, useEffect} from "react";
 import axios  from "axios";
+import { Navigate ,useNavigate } from "react-router-dom";
 
 //function for adding products
 function Addproducts(){
 
     const [product, setProduct] =useState({name:"", price:0, description:"" , category:""})
     const [showMessage, setshowmessage] =useState({success:false,message:""})
-   
+    const Navigate = useNavigate();
     const handlechange =(e) =>{
         e.preventDefault();
 	    const{name ,value} = e.target;
@@ -57,6 +58,8 @@ function Addproducts(){
                         placeholder="Product Category" value={product.category}  className="form-control" required/>
 
                         <button type="submit" className="btn btn-primary form-submit">Insert</button>
+                        
+                        <button type="button" className="btn btn-primary" onClick={() =>Navigate('/productlist')}>Product LIST</button>
 
 
                     

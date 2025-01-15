@@ -6,23 +6,28 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 function Editproducts()
 {
 //const [product, setProduct] = useState([]);
-const [product, setProduct] = useState(null); 
+const [product, setProduct] = useState({
+  name: '',
+  price: 0,
+  description: '',
+  category: ''
+});
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
-
+const Navigate = useNavigate();
 const location = useLocation();
 const productID = location.state;
 
 const [showmessage, setshowMessage] =useState({success :false, message:""})
 
 
-
+/*
 
 useEffect(() => {
     // Define an async function to fetch product details
     const fetchProductDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/viewsingleProduct/${productID}`);
+        const response = await axios.fetch(`http://localhost:5000/api/viewsingleProduct/${productID}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch product details');
@@ -40,28 +45,49 @@ useEffect(() => {
     // Call the function to fetch product details
     fetchProductDetails();
   }, [productID]); // Dependency array includes productId to refetch if it changes
+  */
+
+  useEffect(() => {
+    console.log(productID);
+    const fetchproductdetails = async ()=>{
+      try{
+        const response = await axios.get(`http://localhost:5000/api/viewsingleProduct/${productID}`);
+       
+      const editproductdetails = response.data.data[0];
+
+        setProduct({name:editproductdetails.name, 
+          price:editproductdetails.price, description:editproductdetails.description , 
+          category:editproductdetails.category})
+       
+      } catch(error)
+      {
+          console.log(error)
+      }
+    }
+    fetchproductdetails();
+  },[productID]);
 
 
     const handlechange =(e) =>{
-        e.preventDefault();
-        const{name ,value} = e.target;
-       // setProduct({... product, [name] : value})
-       setProduct((preproduct) =>({... preproduct, [name] : value}))
-
-
+      e.preventDefault();
+      const{name ,value} = e.target;
+      setProduct({... product, [name] : value})
     }
 
 
 const handlesubmit =async (e) =>{
     e.preventDefault();
-   await axios
-    .post(`/api/updateproduct/${productID}`,product)
+    
+  await axios
+    .put(`http://localhost:5000/api/updateproduct/${productID}`,product)
+ 
     .then(res=>{
         console.log(res.data.data)
         setshowMessage({success :true ,message:"Updated succesfully"})
         setProduct({name:product.name, price:product.price, description:product.description , category:product.category})
     })
     .catch(error => {
+      
         console.log(error)
         setshowMessage({success :false ,message:"could not update the product"})
       
@@ -97,6 +123,8 @@ return(
                         placeholder="Product Category" value={product.category}  className="form-control" required/>
 
                         <button type="submit" className="btn btn-primary form-submit">UPDATE</button>
+
+                        <button type="button" className="btn btn-primary" onClick={() =>Navigate('/productlist')}>Product LIST</button>
 
 
                     
